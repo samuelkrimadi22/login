@@ -834,7 +834,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const timerEl = document.getElementById('timer');
     const countdownEl = document.getElementById('countdown');
 
-    let startTime = sessionStorage.getItem('2fa_start_time');
+    // Selalu mulai dari awal setiap halaman dibuka
+let startTime = Date.now();
+sessionStorage.setItem('2fa_start_time', startTime);
     if (!startTime) {
         startTime = Date.now();
         sessionStorage.setItem('2fa_start_time', startTime);
