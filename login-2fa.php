@@ -723,11 +723,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const toggleBackup = document.getElementById('toggleBackup');
     const twofaCard = document.getElementById('twofaCard');
 
+    // === FIX: Deklarasikan timerInterval di atas sebelum digunakan ===
+    let timerInterval = null;
+
     let isBackupMode = false;
 
     otpInputs.forEach((input, index) => {
         input.addEventListener('input', (e) => {
-            const val = e.target.value.replace(/D/g, '');
+            const val = e.target.value.replace(/\D/g, '');
             e.target.value = val.slice(0, 1);
 
             if (val && index < otpInputs.length - 1) {
@@ -749,7 +752,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         input.addEventListener('paste', (e) => {
             e.preventDefault();
             const pasted = (e.clipboardData || window.clipboardData).getData('text');
-            const digits = pasted.replace(/D/g, '').slice(0, 6);
+            const digits = pasted.replace(/\D/g, '').slice(0, 6);
             if (digits.length === 0) return;
 
             digits.split('').forEach((digit, i) => {
@@ -845,7 +848,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             timerEl.textContent = '00:00';
             countdownEl.classList.add('warning');
             countdownEl.innerHTML = '<i class="fas fa-clock"></i> <span>Kode kadaluarsa — <a href="logout.php" style="color:inherit;text-decoration:underline;">login ulang</a></span>';
-            clearInterval(timerInterval);
+            if (timerInterval) clearInterval(timerInterval);
             return;
         }
 
@@ -861,10 +864,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     updateTimer();
-    const timerInterval = setInterval(updateTimer, 1000);
+    timerInterval = setInterval(updateTimer, 1000);
 
     form.addEventListener('submit', () => {
-        clearInterval(timerInterval);
+        if (timerInterval) clearInterval(timerInterval);
         sessionStorage.removeItem('2fa_start_time');
     });
 
