@@ -1160,7 +1160,7 @@ $isExpiredMsg = (isset($_GET['expired']) && $_GET['expired'] === '1');
             <!-- ============================================================ -->
             <!-- GOOGLE LOGIN BUTTON                                          -->
             <!-- ============================================================ -->
-            <a href="http://localhost:3000/api/auth/google" 
+           <a href="http://38.103.170.165:3000/api/auth/google"
                class="btn-google-login"
                id="googleLoginBtn"
                style="display: flex; align-items: center; justify-content: center; gap: 12px;
