@@ -52,27 +52,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = json_decode($resp, true);
             
             if ($httpCode === 200 && !empty($data['success'])) {
-                // Login sukses
-                setAuthToken($data['token'], $data['user']);
-                
-                $_SESSION['user_id']       = $data['user']['id'];
-                $_SESSION['user_name']     = $data['user']['username'];
-                $_SESSION['user_email']    = $data['user']['email'];
-                $_SESSION['is_admin']      = !empty($data['user']['is_admin']) ? 1 : 0;
-                $_SESSION['is_subscribed'] = !empty($data['user']['is_subscribed']);
-                $_SESSION['auth_token']    = $data['token'];
-                
-                // Cleanup temp session
-                unset($_SESSION['temp_2fa_token'], $_SESSION['temp_2fa_email'], $_SESSION['temp_2fa_time']);
-                
-                // Redirect
-                if (!empty($data['user']['is_admin'])) {
-                    header('Location: admin/index.php');
-                } else {
-                    header('Location: dashboard.php');
-                }
-                exit;
-            }
+    // Login sukses
+    setAuthToken($data['token'], $data['user']);
+    
+    // Simpan semua data user ke session
+    $_SESSION['user_id']       = $data['user']['id'];
+    $_SESSION['user_name']     = $data['user']['username'];
+    $_SESSION['user_email']    = $data['user']['email'];
+    $_SESSION['is_admin']      = !empty($data['user']['is_admin']) ? 1 : 0;
+    $_SESSION['is_subscribed'] = !empty($data['user']['is_subscribed']);
+    $_SESSION['auth_token']    = $data['token'];
+    
+    // Cleanup temp session
+    unset($_SESSION['temp_2fa_token'], $_SESSION['temp_2fa_email'], $_SESSION['temp_2fa_time']);
+    
+    // PAKSA REDIRECT KE ADMIN JIKA ADMIN
+    if (!empty($data['user']['is_admin'])) {
+        // Pastikan session ditulis sebelum redirect
+        session_write_close();
+        header('Location: admin/index.php');
+        exit;
+    } else {
+        session_write_close();
+        header('Location: dashboard.php');
+        exit;
+    }
+}
             
             $error = $data['error'] ?? 'Kode salah. Coba lagi.';
         }
